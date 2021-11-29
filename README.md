@@ -10,7 +10,7 @@
 
 ### Task 1: Project Setup and Submission
 
-Your assignment page on Canvas should contain instructions for submitting this project. If you are still unsure, reach out to School Staff.
+Your assignment page on Canvas should contain instructions for submitting this project. If you are still unsure, reach out to School Staff. NOTE: (1) Push to main, (2) Test with Postman and 'npm test'
 
 ### Task 2: Minimum Viable Product
 
