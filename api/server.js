@@ -22,8 +22,8 @@ server.get('/api/users/', (req, res) => {
             res.json(users);
         })
         .catch(err => {
-            res.status(500).json({
-                message: 'Error getting all users',
+            res.status(500).json({ // 500 = Server error
+                message: 'The users information could not be retrieved',
                 error: err.message
             })
         })
@@ -36,11 +36,17 @@ server.get('/api/users/:id', (req, res) => {
 
     Users.findById(id)
         .then( user => {
-            res.json(user)
+            if (user) {
+                res.json(user);
+            } else {
+                res.status(404).json({ // 404 = Not Found
+                    message: 'The user with the specified ID does not exist'
+                })
+            }
         })
         .catch(err => {
-            res.status(500).json({
-                message: `Error getting user ID ${id}`,
+            res.status(500).json({ // 500 = Server error
+                message: `The user information could not be retrieved`,
                 error: err.message
             })
         })
@@ -48,20 +54,20 @@ server.get('/api/users/:id', (req, res) => {
 
 
 // POST NEW USER
-server.post('/api/users/', async (req, res) => {
+server.post('/api/users', async (req, res) => {
     const { body } = req;
     try {
         if (!body.name || !body.bio){
             res.status(400).json({
-                message: 'Name and bio are required'
+                message: 'Please provide name and bio for the user'
             })
         } else {
             const newUser = await Users.insert(body);
-            res.status(201).json(newUser);
+            res.status(201).json(newUser); // 201 = created
         }
     } catch (err) {
-        res.status(500).json({
-            message: 'Error posting new user',
+        res.status(500).json({ // 500 = Server error
+            message: 'There was an error while saving the user to the database',
             error: err.message
         })
     }
@@ -75,17 +81,21 @@ server.put('/api/users/:id', (req, res) => {
 
     Users.update(id, body)
         .then( user => {
-            if (!body.name || !body.bio){
+            if (!user){
+                res.status(404).json({ // 404 = Not found
+                    message: 'The user with the specified ID does not exist'
+                })
+            } else if (!body.name || !body.bio){
                 res.status(400).json({
-                    message: 'Name and bio are required.'
+                    message: 'Please provide name and bio for the user'
                 })
             } else {
-                res.json(user)
+                res.status(200).json(user); // 200 = Ok
             }
         })
         .catch(err => {
-            res.status(500).json({
-                message: `Error updating user.`,
+            res.status(500).json({ // 500 = Server error
+                message: `The user information could not be modified`,
                 error: err.message
             })
         })
@@ -101,13 +111,13 @@ server.delete('/api/users/:id', async (req, res) => {
         if (deletedUser){
             res.json(deletedUser)
         } else {
-            res.status(404).json({
-                message: `User id ${id} does not exist.`
+            res.status(404).json({ // 404 = Not found
+                message: `The user with the specified ID does not exist`
             })
         }
     } catch (err) {
-        res.status(500).json({
-            message: 'Error deleting user.',
+        res.status(500).json({ // 500 = Server error
+            message: 'The user could not be removed',
             error: err.message
         });
     }
